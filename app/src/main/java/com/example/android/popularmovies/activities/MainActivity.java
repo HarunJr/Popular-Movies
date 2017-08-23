@@ -32,6 +32,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String SCROLL_POSITION_KEY = "scroll_position";
     private static final String RECYCLERVIEW_STATE_KEY = "rv_state";
+    private static final String POPULAR = "popular";
+    private static final String TOP_RATED = "top_rated";
     private static final int MOVIE_LOADER = 0;
     private MoviesAdapter moviesAdapter;
     private Spinner mSpinner;
@@ -87,7 +89,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         if (savedInstanceState == null){
             Log.w(LOG_TAG, "savedInstanceState: " );
-            initNetworkConnection("popular", application, this);
+            initNetworkConnection(POPULAR, application, this);
         }else {
             Log.w(LOG_TAG, "savedInstanceStateNOTNULL: " + savedInstanceState);
         }
@@ -155,11 +157,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         switch (items) {
             case "most popular":
                 Log.i(LOG_TAG, "most popular Selected : " + items);
-                initNetworkConnection("popular", application, getApplicationContext());
+                initNetworkConnection(POPULAR, application, getApplicationContext());
                 break;
             case "highest rated":
                 Log.i(LOG_TAG, "highest rated Selected : " + items);
-                initNetworkConnection("top_rated", application, getApplicationContext());
+                initNetworkConnection(TOP_RATED, application, getApplicationContext());
                 getSupportLoaderManager().restartLoader(MOVIE_LOADER, null, MainActivity.this);
                 break;
             case "favourite":

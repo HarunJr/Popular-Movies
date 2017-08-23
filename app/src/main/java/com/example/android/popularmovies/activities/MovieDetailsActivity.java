@@ -36,10 +36,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     private static final int REVIEW_LOADER = 2;
     public static final String MOVIE_FAV_KEY = "movie";
 
-    Uri mUri;
-
-    private static final int UN_FAV = 0;
-    private static final int FAV_TAG = 1;
     private static boolean isFavourite = true;
 
     private Menu menu;
@@ -48,17 +44,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     private ReviewsAdapter reviewsAdapter;
     RecyclerView mRecyclerViewTrailer;
     RecyclerView mRecyclerViewReview;
-
-//    private int movieId;
-//    private String imageUrl;
-//    private String imageTitle;
-//    private String originalTitle;
-//    private String releaseDate;
-//    private String averageRating;
-//    private String overview;
-//    private String backdropPath;
-//    private boolean favourite;
-
 
     private static final String[] TRAILER_COLUMN = {
             TrailerEntry.TABLE_NAME + "." + TrailerEntry.COLUMN_TRAILER_ID,
@@ -91,8 +76,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
-//        if (savedInstanceState == null){
-//        }
 
         getDataFromMainActivity();
         initNetworkConnection(String.valueOf(movie.getId()), application, this);
@@ -144,7 +127,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
         tvOverview.setText(movie.getOverview());
 
         setAdapterToRecyclerview();
-
     }
 
     private void setAdapterToRecyclerview() {
@@ -176,7 +158,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
 
         mRecyclerViewReview.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerViewReview.setNestedScrollingEnabled(false);
-//        mRecyclerViewReview.setHasFixedSize(true);
         reviewsAdapter = new ReviewsAdapter();
         mRecyclerViewReview.setAdapter(reviewsAdapter);
     }
@@ -185,7 +166,6 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         isFavourite = movie.getFavourite();
-        Log.w(LOG_TAG, "onCreateOptionsMenu favourite: " + isFavourite);
         getMenuInflater().inflate(R.menu.details_menu, menu);
         menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_action_fav));
 

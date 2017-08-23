@@ -10,7 +10,7 @@ public class PopularMoviesApplication extends Application {
     public static final String BASE_PICTURE_URL = "http://image.tmdb.org/t/p/w185/";
     public static final String BASE_PICTURE_YOU_TUBE_URL = "http://img.youtube.com/vi/";
     public static final String BASE_VIDEO_YOU_TUBE_URL = "https://www.youtube.com/watch?v=";
-    public static final String API_KEY = "xxxxxxxx";
+    public static final String API_KEY = "xxxxxxx";
 
     private final Bus bus;
 
@@ -27,5 +27,4 @@ public class PopularMoviesApplication extends Application {
     public Bus getBus() {
         return bus;
     }
-
 }

@@ -23,7 +23,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     private final Context mContext;
     private Cursor mCursor;
     private static final int TYPE_ITEM = 1;
-    Movie movie;
+    private Movie movie;
+
     public MoviesAdapter(Context application, MoviesAdapterOnClickHandler mClickHandler) {
         this.mClickHandler = mClickHandler;
         this.mContext = application;

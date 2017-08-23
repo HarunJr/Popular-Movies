@@ -1,6 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,14 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PopularMoviesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PopularMoviesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Activities that contain this fragment must implement the
+// * {@link PopularMoviesFragment.OnFragmentInteractionListener} interface
+// * to handle interaction events.
+// * Use the {@link PopularMoviesFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class PopularMoviesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
 

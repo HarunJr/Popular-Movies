@@ -23,4 +23,6 @@ public class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         bus.unregister(this);
     }
+
+
 }

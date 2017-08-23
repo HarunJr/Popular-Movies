@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="padding_space_end">16dp</dimen>
+    <dimen name="padding_space_top">20dp</dimen>
+
+    <dimen name="imageWidth">120dp</dimen>
+    <dimen name="imageHeight">180dp</dimen>
+
+    <dimen name="imageToolbarHeight">200dp</dimen>
+    <dimen name="imageRecyclerViewHeight">270dp</dimen>
+</resources>

@@ -12,10 +12,14 @@
     <string name="background_image">Background image</string>
     <string name="average_rating">Rating</string>
     <string name="release_date">Release date</string>
+    <string name="fav_button">Add Fav</string>
+    <string name="overview">Overview</string>
+    <string name="trailers_title">Trailers:</string>
 
     <string-array name="spinner_items">
         <item>most popular</item>
         <item>highest rated</item>
+        <item>favourite</item>
     </string-array>
 
 </resources>

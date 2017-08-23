@@ -1,8 +1,13 @@
 package com.example.android.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Movie {
+import java.util.List;
+
+public class Movie implements Parcelable{
     @SerializedName("id")
     private final int id;
 
@@ -22,7 +27,6 @@ public class Movie {
     private String popularity;
 
     @SerializedName("overview")
-
     private final String overview;
 
     @SerializedName("backdrop_path")
@@ -31,8 +35,13 @@ public class Movie {
     @SerializedName("release_date")
     private final String releaseDate;
 
+    @SerializedName("results")
+    private List<Movie> movieInfo;
+
+    private boolean favourite;
+
     public Movie(int id, String image_url, String image_title, String original_title, double vote_average,
-                 String overview, String release_date, String backdrop_path) {
+                 String overview, String release_date, String backdrop_path, boolean favourite) {
         this.id =id;
         this.posterPath = image_url;
         this.title = image_title;
@@ -41,6 +50,17 @@ public class Movie {
         this.overview = overview;
         this.releaseDate = release_date;
         this.backdropPath = backdrop_path;
+        this.favourite = favourite;
+    }
+
+    public Movie(int id, String image_url, String image_title, double vote_average,
+                 String overview, String release_date, String backdrop_path) {
+        this(id,image_url,image_title,"",vote_average,overview,release_date,backdrop_path,true);
+    }
+
+    private Movie(Parcel source) {
+        this(source.readInt(),source.readString(),source.readString(),source.readString(),source.readDouble()
+                ,source.readString(),source.readString(),source.readString(), source.readInt() == 1);
     }
 
     public int getId() {
@@ -78,5 +98,47 @@ public class Movie {
     public String getBackdropPath() {
         return backdropPath;
     }
+
+    public List<Movie> getMovieInfo() {
+        return movieInfo;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
+    public boolean getFavourite() {
+        return favourite;
+    }
+
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(posterPath);
+        dest.writeString(title);
+        dest.writeString(originalTitle);
+        dest.writeDouble(voteAverage);
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeString(backdropPath);
+        dest.writeInt(favourite ? 1:0);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[0];
+        }
+    };
+
 
 }

@@ -1,12 +1,10 @@
 package com.example.android.popularmovies.activities;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,21 +16,32 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.example.android.popularmovies.MoviesAdapter;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.example.android.popularmovies.data.Contract;
+import com.example.android.popularmovies.data.Contract.FavouriteEntry;
 import com.example.android.popularmovies.data.Contract.MovieEntry;
-import com.example.android.popularmovies.infrastructure.PopularMoviesApplication;
-import com.example.android.popularmovies.service.MovieService;
+import com.example.android.popularmovies.data.LocalStore;
+import com.example.android.popularmovies.model.Movie;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+import static com.example.android.popularmovies.activities.MovieDetailsActivity.MOVIE_FAV_KEY;
+import static com.example.android.popularmovies.utilities.NetworkUtils.initNetworkConnection;
+
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String SCROLL_POSITION_KEY = "scroll_position";
+    private static final String RECYCLERVIEW_STATE_KEY = "rv_state";
     private static final int MOVIE_LOADER = 0;
     private MoviesAdapter moviesAdapter;
     private Spinner mSpinner;
+    RecyclerView mRecyclerView;
+    Parcelable mRecyclerViewState;
+    GridLayoutManager gridLayoutManager;
+    int mScrollPosition = RecyclerView.NO_POSITION;
 
-    private static final String[] MOVIE_COLUMN = {
+
+    public static final String[] MOVIE_COLUMN = {
             MovieEntry.TABLE_NAME + "." + MovieEntry.COLUMN_MOVIE_ID,
             MovieEntry.COLUMN_POSTER_PATH,
             MovieEntry.COLUMN_MOVIE_TITLE,
@@ -43,7 +52,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             MovieEntry.RELEASE_DATE,
             MovieEntry.BACKDROP_PATH,
     };
-
     // These indices are tied to MOVIE_COLUMN.  If MOVIE_COLUMN changes, these must change
     public static final int COL_ID = 0;
     public static final int COL_PATH = 1;
@@ -55,13 +63,35 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public static final int COL_RELEASE_DATE = 7;
     public static final int COL_BACKDROP_PATH = 8;
 
+    public static final String[] FAVOURITE_COLUMN = {
+            FavouriteEntry.TABLE_NAME + "." + FavouriteEntry.COLUMN_FAV_ID,
+            FavouriteEntry.COLUMN_POSTER_PATH,
+            FavouriteEntry.COLUMN_FAV_TITLE,
+            FavouriteEntry.COLUMN_VOTE_AVERAGE,
+            FavouriteEntry.COLUMN_OVERVIEW,
+            FavouriteEntry.RELEASE_DATE,
+            FavouriteEntry.BACKDROP_PATH,};
+
+    public static final int COL_FAV_ID = 0;
+    public static final int COL_FAV_PATH = 1;
+    public static final int COL_FAV_TITLE = 2;
+    public static final int COL_FAV_VOTE_AVERAGE = 3;
+    public static final int COL_FAV_OVERVIEW = 4;
+    public static final int COL_FAV_RELEASE_DATE = 5;
+    public static final int COL_FAV_BACKDROP_PATH = 6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initNetworkConnection("popular");
-        declareViews();
+        if (savedInstanceState == null){
+            Log.w(LOG_TAG, "savedInstanceState: " );
+            initNetworkConnection("popular", application, this);
+        }else {
+            Log.w(LOG_TAG, "savedInstanceStateNOTNULL: " + savedInstanceState);
+        }
+        initViews();
         getSupportLoaderManager().initLoader(MOVIE_LOADER, null, this);
 //        addPopularMoviesFragment();
     }
@@ -73,7 +103,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 //                .commit();
 //    }
 
-    private void declareViews() {
+    private void initViews() {
         Toolbar mToolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
         mSpinner = (Spinner) findViewById(R.id.spinner);
         setSupportActionBar(mToolbar);
@@ -90,20 +120,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String items = mSpinner.getSelectedItem().toString();
-                switch (items){
-                    case "most popular":
-                        Log.i(LOG_TAG,"most popular Selected : " +items);
-                        initNetworkConnection("popular");
-                        break;
-                    case "highest rated":
-                        Log.i(LOG_TAG,"highest rated Selected : "+ items);
-                        initNetworkConnection("top_rated");
-//                        bus.post(new MovieService.MovieServerRequest("top_rated"));
-                        getSupportLoaderManager().restartLoader(MOVIE_LOADER, null, MainActivity.this);
-                        break;
-                    default:
-                        Log.i(LOG_TAG,"most popular Selected : "+ items);
-                }
+                selectSpinnerOptions(items);
             }
 
             @Override
@@ -112,28 +129,81 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
         });
 
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_movies);
-//        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_movies);
 
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gridLayoutManager = new GridLayoutManager(this, 2);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        } else {
+            gridLayoutManager = new GridLayoutManager(this, 4);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        }
+
+        mRecyclerView.setHasFixedSize(true);
         moviesAdapter = new MoviesAdapter(this, new MoviesAdapter.MoviesAdapterOnClickHandler() {
             @Override
-            public void onClick(Uri uri, MoviesAdapter.MoviesViewHolder vh) {
-                Log.w(LOG_TAG, "onClick: "+ uri);
+            public void onClick(Movie movie, MoviesAdapter.MoviesViewHolder vh) {
+                Log.w(LOG_TAG, "onClick: " + movie.getBackdropPath());
                 startActivity(new Intent(getApplicationContext(), MovieDetailsActivity.class)
-                        .setData(uri));
+                        .putExtra(MOVIE_FAV_KEY, movie));
             }
         });
         mRecyclerView.setAdapter(moviesAdapter);
     }
 
-    private void initNetworkConnection(String query){
-        if (isNetworkAvailable(application)){
-            bus.post(new MovieService.MovieServerRequest(query));
+    private void selectSpinnerOptions(String items) {
+        switch (items) {
+            case "most popular":
+                Log.i(LOG_TAG, "most popular Selected : " + items);
+                initNetworkConnection("popular", application, getApplicationContext());
+                break;
+            case "highest rated":
+                Log.i(LOG_TAG, "highest rated Selected : " + items);
+                initNetworkConnection("top_rated", application, getApplicationContext());
+                getSupportLoaderManager().restartLoader(MOVIE_LOADER, null, MainActivity.this);
+                break;
+            case "favourite":
+                Log.i(LOG_TAG, "favourite Selected : " + items);
+                LocalStore localStore = new LocalStore(application);
+                application.getContentResolver().delete(Contract.MovieEntry.CONTENT_URI, null, null);
+                localStore.getFavMovies();
+                getSupportLoaderManager().restartLoader(MOVIE_LOADER, null, MainActivity.this);
+                break;
+            default:
+                Log.i(LOG_TAG, "most popular Selected : " + items);
+        }
+    }
 
-        }else {
-            Toast.makeText(application, "No Internet Connection! ", Toast.LENGTH_LONG).show();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mRecyclerViewState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        gridLayoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
+        if (gridLayoutManager != null){
+            mScrollPosition = gridLayoutManager.findFirstVisibleItemPosition();
+            outState.putInt(SCROLL_POSITION_KEY, mScrollPosition);
+            outState.putParcelable(RECYCLERVIEW_STATE_KEY, mRecyclerViewState);
+            Log.w(LOG_TAG, "state onSaveInstanceState: mScrollPosition "+mScrollPosition);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SCROLL_POSITION_KEY)){
+            mRecyclerViewState = savedInstanceState.getParcelable(RECYCLERVIEW_STATE_KEY);
+            mScrollPosition = savedInstanceState.getInt(SCROLL_POSITION_KEY);
+            mRecyclerView.scrollToPosition(mScrollPosition);
+            Log.w(LOG_TAG, "state onRestoreInstanceState: "+mScrollPosition);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mRecyclerViewState != null){
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
         }
     }
 
@@ -153,21 +223,13 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
-        moviesAdapter.swapCursor(data);
 
+        moviesAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         moviesAdapter.swapCursor(null);
-
-    }
-
-    private static boolean isNetworkAvailable(PopularMoviesApplication application) {
-        ConnectivityManager cm = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        Log.w(LOG_TAG, "isNetworkAvailable" + networkInfo);
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
 }

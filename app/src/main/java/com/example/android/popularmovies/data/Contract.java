@@ -19,6 +19,9 @@ public class Contract {
     // looking at movie data. content://com.example.android.popularmovies.app/givemeroot/ will fail,
     // as the ContentProvider hasn't been given any information on what to do with "givemeroot".
     static final String PATH_MOVIE = "movie";
+    static final String PATH_TRAILER = "trailer";
+    static final String PATH_REVIEW = "review";
+    static final String PATH_FAVOURITE = "favourite";
 
     public static final class MovieEntry {
 
@@ -38,47 +41,86 @@ public class Contract {
         public static final String COLUMN_OVERVIEW = "overview";
         public static final String RELEASE_DATE = "release_date";
         public static final String BACKDROP_PATH = "backdrop_path";
+//        public static final String MOVIE_CAT_TAG = "movie_tag";
 
         public static Uri buildMovieDataUri(
-                String image_url, String image_title, String original_title, double vote_average,
-                String overview, String release_date, String backdropPath) {
+                int id, String image_url, String image_title, String original_title, String vote_average,
+                String overview, String release_date, String backdropPath, String favourite) {
+
             return CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(id))
                     .appendPath(image_url)
                     .appendPath(image_title)
                     .appendPath(original_title)
-                    .appendPath(String.valueOf(vote_average))
+                    .appendPath(vote_average)
                     .appendPath(overview)
                     .appendPath(release_date)
                     .appendPath(backdropPath)
+                    .appendPath(favourite)
                     .build();
         }
 
-        public static String getMovieUrlFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(1);
+        public static int getMovieIdFromUri(Uri mUri) {
+            return Integer.parseInt(mUri.getPathSegments().get(1));
+        }
+    }
+
+    public static final class TrailerEntry {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_TRAILER).build();
+
+        static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRAILER;
+//        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+
+        public static final String TABLE_NAME = "trailer";
+
+        public static final String COLUMN_TRAILER_ID = "id";
+        public static final String COLUMN_TRAILER_KEY = "key";
+        public static final String COLUMN_TRAILER_NAME = "title";
+    }
+
+    public static final class ReviewEntry {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEW).build();
+
+        static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEW;
+//        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+
+        public static final String TABLE_NAME = "review";
+
+        public static final String COLUMN_REVIEW_ID = "id";
+        public static final String COLUMN_REVIEW_AUTHOR= "author";
+        public static final String COLUMN_REVIEW_CONTENT = "content";
+        public static final String COLUMN_REVIEW_URL = "url";
+
+    }
+
+    public static final class FavouriteEntry {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVOURITE).build();
+
+        static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITE;
+//        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+
+        public static final String TABLE_NAME = "favourite";
+
+        public static final String COLUMN_FAV_ID = "id";
+        public static final String COLUMN_POSTER_PATH = "poster_path";
+        public static final String COLUMN_FAV_TITLE= "title";
+        public static final String COLUMN_VOTE_AVERAGE = "vote_average";
+        public static final String COLUMN_OVERVIEW = "overview";
+        public static final String RELEASE_DATE = "release_date";
+        public static final String BACKDROP_PATH = "backdrop_path";
+
+        public static Uri buildFavouriteDataUri(int movieId) {
+            return CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(movieId))
+                    .build();
         }
 
-        public static String getTitleFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(2);
+        public static int getFavouriteId(Uri mUri) {
+            return Integer.parseInt(mUri.getPathSegments().get(1));
         }
 
-//        public static String getOriginalTitleFromUri(Uri mUri) {
-//            return mUri.getPathSegments().get(3);
-//        }
-
-        public static String getVoteAverageFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(4);
-        }
-
-        public static String getOverviewFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(5);
-        }
-
-        public static String getReleaseDateFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(6);
-        }
-
-        public static String getBackdropPathFromUri(Uri mUri) {
-            return mUri.getPathSegments().get(7);
-        }
     }
 }

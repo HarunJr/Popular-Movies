@@ -42,7 +42,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     GridLayoutManager gridLayoutManager;
     int mScrollPosition = RecyclerView.NO_POSITION;
 
-
     public static final String[] MOVIE_COLUMN = {
             MovieEntry.TABLE_NAME + "." + MovieEntry.COLUMN_MOVIE_ID,
             MovieEntry.COLUMN_POSTER_PATH,

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +36,8 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     private static final int TRAILER_LOADER = 1;
     private static final int REVIEW_LOADER = 2;
     public static final String MOVIE_FAV_KEY = "movie";
+    Parcelable mRecyclerViewReviewState;
+    LinearLayoutManager linearLayoutManager;
 
     private static boolean isFavourite = true;
 
@@ -87,7 +90,7 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     private void getDataFromMainActivity() {
         //get vehicle value from uri path
         Intent intent = getIntent();
-        if (intent != null) {
+        if (intent.getExtras() != null) {
             movie = intent.getParcelableExtra(MOVIE_FAV_KEY);
             Log.w(LOG_TAG, " getDataFromMainActivity favourite" + "\n" + movie.getId() + "\n" + movie.getTitle() + "\n"
                     + movie.getPosterPath() + "\n" + movie.getVoteAverage() + "\n" + movie.getReleaseDate() + "\n"
@@ -156,8 +159,9 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
         });
         mRecyclerViewTrailer.setAdapter(trailerAdapter);
 
-        mRecyclerViewReview.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerViewReview.setNestedScrollingEnabled(false);
+        linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerViewReview.setLayoutManager(linearLayoutManager);
+        mRecyclerViewReview.setNestedScrollingEnabled(true);
         reviewsAdapter = new ReviewsAdapter();
         mRecyclerViewReview.setAdapter(reviewsAdapter);
     }
@@ -219,6 +223,7 @@ public class MovieDetailsActivity extends BaseActivity implements LoaderManager.
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        mRecyclerViewReviewState = mRecyclerViewReview.getLayoutManager().onSaveInstanceState();
         outState.putBoolean(MOVIE_FAV_KEY, isFavourite);
     }
 

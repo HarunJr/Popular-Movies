@@ -11,8 +11,8 @@ Bring particular mobile experiences to life by building clean and compelling use
 * Incorporating of libraries to simplify the amount of code needed to be written.
 
 ## Features
-*	Discover the most popular and highest rated movies.
-*	Mark movies as favorite
+*	Discover the _most popular_ and _highest rated_ movies.
+*	Mark movies as _favorite_
 *	Read through reviews
 *	Built using Material Design principles
 *	Offline capable

@@ -79,7 +79,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
             Log.w(LOG_TAG, "bind: " + trailer.getId() + "\n" + trailer.getThumbnail_url());
 
             if (imageView != null) {
-                Picasso.with(mContext)
+                Picasso.get()
                         .load(trailer.getThumbnail_url()).
                         error(android.R.drawable.stat_notify_error)
                         .placeholder(R.mipmap.ic_image_black_36dp)

@@ -45,7 +45,7 @@ public class NetworkUtils {
     public static void loadImage(String url, ImageView imageView, Context mContext) {
         Log.w(LOG_TAG, "loadImage " + url);
 
-        Picasso.with(mContext)
+        Picasso.get()
                 .load(PopularMoviesApplication.BASE_PICTURE_URL+url)
                 .networkPolicy(isNetworkAvailable(mContext)? NetworkPolicy.NO_CACHE : NetworkPolicy.OFFLINE)
                 .error(android.R.drawable.stat_notify_error)

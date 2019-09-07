@@ -6,10 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.data.Contract.FavouriteEntry;
-import com.example.android.popularmovies.data.Contract.MovieEntry;
-import com.example.android.popularmovies.data.Contract.ReviewEntry;
-import com.example.android.popularmovies.data.Contract.TrailerEntry;
+import static com.example.android.popularmovies.data.Contract.*;
 
 class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "movies.db";

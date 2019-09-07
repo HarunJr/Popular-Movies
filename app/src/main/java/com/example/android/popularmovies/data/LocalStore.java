@@ -10,7 +10,6 @@ import android.util.Log;
 
 import com.example.android.popularmovies.DatabaseHandler;
 import com.example.android.popularmovies.activities.MainActivity;
-import com.example.android.popularmovies.data.Contract.FavouriteEntry;
 import com.example.android.popularmovies.data.Contract.MovieEntry;
 import com.example.android.popularmovies.data.Contract.ReviewEntry;
 import com.example.android.popularmovies.data.Contract.TrailerEntry;
@@ -20,6 +19,8 @@ import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.Trailer;
 
 import java.util.ArrayList;
+
+import static com.example.android.popularmovies.data.Contract.*;
 
 public class LocalStore {
     private static final String LOG_TAG = LocalStore.class.getSimpleName();

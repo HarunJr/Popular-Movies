@@ -3,8 +3,6 @@ package com.example.android.popularmovies.live;
 import android.util.Log;
 
 import com.example.android.popularmovies.data.Contract;
-import com.example.android.popularmovies.data.Contract.ReviewEntry;
-import com.example.android.popularmovies.data.Contract.TrailerEntry;
 import com.example.android.popularmovies.data.LocalStore;
 import com.example.android.popularmovies.infrastructure.PopularMoviesApplication;
 import com.example.android.popularmovies.model.Movie;
@@ -16,6 +14,8 @@ import com.squareup.otto.Subscribe;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.example.android.popularmovies.data.Contract.*;
 
 class LiveMovieServices extends BaseLiveService {
     private static final String LOG_TAG = LiveMovieServices.class.getSimpleName();
@@ -38,7 +38,7 @@ class LiveMovieServices extends BaseLiveService {
 
 //                        String sMovieWithFavAndIdSelection = MovieEntry.TABLE_NAME + "." + MovieEntry.COLUMN_FAVOURITE + " != ?";
 //                        String[] selectionArgs = new String[]{String.valueOf(1)};
-                        application.getContentResolver().delete(Contract.MovieEntry.CONTENT_URI, null, null);
+                        application.getContentResolver().delete(MovieEntry.CONTENT_URI, null, null);
 
                         for (Movie movie : response.body().getMovieInfo()) {
                             Log.w(LOG_TAG, "onResponse: " + request.param + " " + movie.getTitle());

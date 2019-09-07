@@ -17,3 +17,7 @@ Bring particular mobile experiences to life by building clean and compelling use
 *	Built using Material Design principles
 *	Offline capable
 *	UI optimized for phone and tablet
+
+### Preview:
+<img src="images/main_page_view.jpg" width="250">  <img src="images/detail_page_first_view.jpg" width="250">  <img src="images/detail_page_second_view.jpg" width="250">
+

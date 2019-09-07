@@ -21,3 +21,6 @@ Bring particular mobile experiences to life by building clean and compelling use
 ### Preview:
 <img src="images/main_page_view.jpg" width="250">  <img src="images/detail_page_first_view.jpg" width="250">  <img src="images/detail_page_second_view.jpg" width="250">
 
+<p align="center">
+<img src="screen_record/Popular-movies-GIF.gif" width="300">
+</p>
